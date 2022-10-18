@@ -37,11 +37,11 @@ export default function Nav() {
             </div>
 
                 
-                {/* {!user && (
-                    <Link href={"/auth/login"}>
-                    <Button variant="gradient">Join Now</Button>
-                    </Link>
-                )} */}
+            {/* {!user && (
+                <Link href={"/auth/login"}>
+                <Button variant="gradient">Join Now</Button>
+                </Link>
+            )} */}
                 
             <ul className="flex w-full items-center justify-end gap-x-8">
                 {user && (
