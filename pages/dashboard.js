@@ -5,6 +5,8 @@ import { auth } from "../utils/firebase"
 import { Breadcrumbs } from "@material-tailwind/react";
 import { FaHome } from "react-icons/fa";
 import {server} from "../config/index"
+import { v4 as uuidv4 } from 'uuid';
+import { GeoPoint } from "firebase/firestore";
 
 import {
   Button,
@@ -22,12 +24,38 @@ export default function Dashboard({data}) {
   const [user, loading] = useAuthState(auth);
   const [openCreate, setOpenCreate] = useState(false);
 
-  //console.log(user.uid);
-  // const handleNewEvent = () => {
-  //   setOpenCreate(!openCreate);
-  // }
-  const handleCreateEvent = () => {
-    console.log("creating event");
+  const handleCreateEvent = async (event) => {
+    const { name, max, locationLat, locationLong, user } = event;
+    const geoPoint = new GeoPoint(locationLat, locationLong);
+
+    const fetchData = {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    //mode: 'cors', // no-cors, *cors, same-origin
+    //cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    //credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    //redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify({
+      "Name": name,
+      "Attendees": max,
+      "Location": geoPoint,
+      "Owner": user.displayName,
+    }) // body data type must match "Content-Type" header
+    }
+    
+    const res = await fetch(`${server}/api/event`, fetchData)
+      .then(result => {
+        //console.log("POST result: ", result.ok)
+        return result.ok
+      })
+      .catch(error => {
+        //console.log(error)
+        return error
+      })
   }
         
     if (loading) return (<h1>Loading...</h1>)
@@ -60,8 +88,8 @@ export default function Dashboard({data}) {
                 return (
                   
 
-                  <div className="rounded-lg bg-gradient-to-br from-yellow-800 via-purple-700 via-pink-600 to-indigo-500 p-1 basis-1/3 grow">
-                  <div className="flex flex-col p-8 rounded-lg text-blue-gray-50 gap-2 bg-black">
+                  <div key={uuidv4()} className="rounded-lg bg-gradient-to-br from-yellow-800 via-purple-700 via-pink-600 to-indigo-500 p-1 basis-1/4 grow">
+                  <div className="flex flex-col p-8 rounded-lg text-blue-gray-50 gap-2 bg-black h-full">
                     <div>
                       <h2 className="font-bold">Event Name: </h2>
                       <p className="">{ doc.Name }</p>
@@ -81,7 +109,7 @@ export default function Dashboard({data}) {
                     </div>
                     <div>
                       <h2 className="font-bold">Maximum attendees: </h2>
-                      <p className="">{ doc['Max no of attendees'] }</p>
+                      <p className="">{ doc.Attendees }</p>
                     </div>
                    </div>
                    </div>

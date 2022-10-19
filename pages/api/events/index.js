@@ -1,7 +1,5 @@
 import { database } from "../../../utils/firebase";
 import { collection, getDocs} from "firebase/firestore";
-//import { auth } from "../utils/firebase";
-//import { useAuthState } from "react-firebase-hooks/auth";
 
 export default async function handler(req, res) {
     

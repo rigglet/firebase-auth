@@ -1,6 +1,4 @@
 import {useState} from "react"
-import {FaUserAlt} from "react-icons/fa"
-import {MdPassword} from "react-icons/md"
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../utils/firebase";
 import { CgRename } from "react-icons/cg"
@@ -27,7 +25,14 @@ export default function CreateEventModal({ openCreate, setOpenCreate, handleCrea
   const handleCancel = () => {
     setOpenCreate(()=>!openCreate)
   }
-  const handleCreate = () => {
+
+  const handleCreate = async () => {
+    try {
+      const res = await handleCreateEvent({ name, max, user, locationLat, locationLong })
+      .then(res=>console.log(res))
+    } catch (err) {
+      console.log(err)
+    }
     setName("");
     setMax(1);
     setLocationLat(0);
@@ -47,8 +52,8 @@ export default function CreateEventModal({ openCreate, setOpenCreate, handleCrea
           <form className="flex flex-col flex-grow gap-y-4">
             <Input onChange={(e)=>setName(e.target.value)} name="name" value={name} className="text-2xl" label="Name" icon={<CgRename />} />
             <Input onChange={(e)=>setMax(e.target.value)} name="max" value={max} className="text-2xl" label="Max no. of attendees" type="number" min="1" icon={<ImListNumbered />} />
-            <Input onChange={(e)=>setLocationLat(e.target.value)} name="locationLat" value={locationLat} className="text-2xl" label="Location Latitute" type="number" min="0" icon={<TbWorldLatitude />} />
-            <Input onChange={(e)=>setLocationLong(e.target.value)} name="locationLong" value={locationLong} className="text-2xl" label="Location Londitude" type="number" min="0" icon={<TbWorldLongitude />} />
+            <Input onChange={(e)=>setLocationLat(e.target.value)} name="locationLat" value={locationLat} className="text-2xl" label="Location Latitute" type="number" min="-90" max="90" icon={<TbWorldLatitude />} />
+            <Input onChange={(e)=>setLocationLong(e.target.value)} name="locationLong" value={locationLong} className="text-2xl" label="Location Londitude" type="number" min="-180" max="180" icon={<TbWorldLongitude />} />
           </form>
           
         </DialogBody>
