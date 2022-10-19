@@ -4,7 +4,7 @@ import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from "../utils/firebase"
 import { Breadcrumbs } from "@material-tailwind/react";
 import { FaHome } from "react-icons/fa";
-import {getUserEvents} from "../utils/database"
+import {server} from "../config/index"
 
 import {
   Button,
@@ -97,17 +97,8 @@ export default function Dashboard({data}) {
 // This gets called on every request
 export async function getServerSideProps() {
   
-  const data = await getUserEvents().then((querySnapshot) => { 
-    
-    let arrData = [];
-    
-    querySnapshot.forEach((doc) => {
-      arrData.push(doc.data())
-      //console.log(doc.id, " => ", doc.data());
-    });
-    
-    return JSON.parse(JSON.stringify(arrData))
-  })
+  const res = await fetch(`${server}/api/events`)
+  const data = await res.json();
 
   // Pass data to the page via props
   return { props: { data } }
